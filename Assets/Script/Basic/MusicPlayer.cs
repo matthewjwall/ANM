@@ -10,6 +10,9 @@ public class MusicPlayer : MonoBehaviour {
 	public float plength = 10.0f;
 	public float blength = 10.0f;
 	public float bprob = 10.0f;
+	public float durational; 
+	
+	public float myPitch; 
 
 	private List <MelodyGenerator> generators;
 	
@@ -33,7 +36,6 @@ public class MusicPlayer : MonoBehaviour {
 		generators.Add(markovplay);
 		//generators.Add(new Species_Generator());
 		//generators.Add(new MotivicGenerator());
-			
 		NewMelody();
 	}
 	
@@ -67,29 +69,34 @@ public class MusicPlayer : MonoBehaviour {
 			float duration = melody.durations[durationindex];
 			float velocity = melody.volumes[velocityindex]/2;
 			AudioClip sample = melody.sounds[sampleindex];
+
 			
 			AudioSource a_s;
 			if (melody.specifychannels)
 			{
 				a_s = audiosources[melody.channels[channelindex]];
+
 			}
 			else
 			{
 				a_s = audiosources[channelindex];
 			}
-			
 			a_s.pitch=pitch;
+			myPitch = (Mathf.Round(a_s.pitch*10)/10)*10; 
+			Debug.Log(myPitch); 
 			a_s.volume=velocity;
 			//produces clicks :(
 			//if (melody.clearchannelonretrigger)
 			//	a_s.Stop();
 			a_s.PlayOneShot(sample);
 			yield return new WaitForSeconds(duration);
+			durational = duration; 
 			
 			pitchindex = (pitchindex+1)%melody.frequencies.Count;
 			durationindex = (durationindex+1)%melody.durations.Count;
 			velocityindex = (velocityindex+1)%melody.volumes.Count;
 			sampleindex = (sampleindex+1)%melody.sounds.Count;
+
 			if (melody.specifychannels)
 			{
 				channelindex = (channelindex + 1)%melody.channels.Count;
